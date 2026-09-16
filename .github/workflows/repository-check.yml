@@ -18,14 +18,16 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BRANCH: ${{ github.head_ref }}
         run: |
+          # 브랜치 이름은 <GitHub아이디>/<작업이름> 형식이므로 첫 구간만 아이디로 봄
+          branch_owner="${BRANCH%%/*}"
           errors=0
           while IFS= read -r path; do
             [ -z "$path" ] && continue
             case "$path" in
               projects/*)
                 owner=$(echo "$path" | cut -d/ -f2)
-                if [ "$owner" != "$BRANCH" ]; then
-                  echo "::error file=$path::projects/$owner/ 는 브랜치($BRANCH) 소유가 아닌 팀원 폴더입니다. 본인 폴더(projects/$BRANCH/)만 이 PR에서 수정하세요."
+                if [ "$owner" != "$branch_owner" ]; then
+                  echo "::error file=$path::projects/$owner/ 는 브랜치($BRANCH) 소유가 아닌 팀원 폴더입니다. 본인 폴더(projects/$branch_owner/)만 이 PR에서 수정하세요."
                   errors=1
                 fi
                 ;;
