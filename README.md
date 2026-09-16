@@ -18,6 +18,34 @@ bai-shared/
 
 프로젝트 폴더는 **사람 기준**으로 나뉩니다 — 팀원이 늘어나도 "누가 만든 건지" 한눈에 보이도록 하기 위해서입니다. 이름과 GitHub 아이디를 연결한 표는 [MEMBERS.md](MEMBERS.md)에 있어서, 아래 명령어에서 GitHub 아이디 대신 이름만 말해도 됩니다.
 
+## 브랜치 작업 → PR 생성 → main merge 작업 흐름
+
+내 작업을 공유할 때 전체적으로 이런 순서로 진행됩니다. 각 단계의 자세한 명령어는 아래 "사용 방법"과 [AGENTS.md](AGENTS.md)를 참고하세요.
+
+```
+작업 시작
+   ↓
+main 최신화                          ← git fetch + origin/main 기준으로 브랜치 생성
+   ↓
+<GitHub아이디>/<작업이름> 브랜치 생성    ← "내 브랜치 연결하기"
+   ↓
+자기 projects/<아이디>/ 폴더 위주로 수정  ← "내 작업 공유하기"
+   ↓
+handoff 작성
+   ↓
+push
+   ↓
+PR 생성                              ← pull_request_template.md 양식이 자동으로 채워짐
+   ↓
+GitHub 자동 검사                      ← folder-ownership-check · secret-scan · repo-rules-check
+   ↓
+리뷰 또는 본인 최종 확인                ← CODEOWNERS로 알림은 가지만 승인은 필수 아님
+   ↓
+main merge                           ← 위 검사 3개를 통과해야 merge 가능
+   ↓
+작업 브랜치 삭제                       ← 자동 (Automatically delete head branches)
+```
+
 ## 사용 방법 (전원 공통)
 
 자기 AI 코딩 에이전트(Claude Code·Codex·Cursor 등 무엇이든)에게 아래처럼 한 줄만 시키세요. 이 저장소의 [AGENTS.md](AGENTS.md)에 자세한 절차가 적혀 있어서, 그 파일을 읽을 줄 아는 에이전트라면 알아서 따라합니다.
