@@ -50,3 +50,72 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  repo-rules-check:
+    name: repo-rules-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 민감 파일명 / 프로젝트 폴더 구조 / 신규 프로젝트 README 검사
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          errors=0
+
+          echo "1) 민감 파일 이름 검사 (.env, 키/인증서 파일 등)"
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            base=$(basename "$path")
+            lower=$(echo "$base" | tr '[:upper:]' '[:lower:]')
+            case "$base" in
+              .env|.env.*)
+                if [ "$base" != ".env.example" ]; then
+                  echo "::error file=$path::민감 파일로 보이는 이름입니다 ($base). 실제 값이 든 .env는 커밋하지 마세요."
+                  errors=1
+                fi
+                ;;
+              *.pem|*.key|*.p12|*.pfx)
+                echo "::error file=$path::인증서/키 파일로 보이는 이름입니다 ($base). 커밋하지 마세요."
+                errors=1
+                ;;
+            esac
+            case "$lower" in
+              *secret*|*credential*)
+                echo "::error file=$path::파일 이름에 secret/credential이 포함되어 있습니다 ($base). 민감정보가 아닌지 확인하세요."
+                errors=1
+                ;;
+            esac
+          done < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA")
+
+          echo "2) 프로젝트 폴더 구조 검사 (projects/<아이디>/<프로젝트명>/... 형태여야 함)"
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              projects/*)
+                depth=$(echo "$path" | awk -F/ '{print NF}')
+                if [ "$depth" -lt 3 ]; then
+                  echo "::error file=$path::projects/ 바로 아래가 아니라 projects/<아이디>/<프로젝트명>/ 안에 파일을 두세요."
+                  errors=1
+                fi
+                ;;
+            esac
+          done < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA")
+
+          echo "3) 새로 추가되는 프로젝트는 README.md 필요"
+          base_projects=$(git ls-tree -r --name-only "$BASE_SHA" -- projects 2>/dev/null | awk -F/ 'NF>=3{print $2"/"$3}' | sort -u)
+          head_projects=$(git ls-tree -r --name-only "$HEAD_SHA" -- projects 2>/dev/null | awk -F/ 'NF>=3{print $2"/"$3}' | sort -u)
+          new_projects=$(comm -13 <(echo "$base_projects") <(echo "$head_projects"))
+          for p in $new_projects; do
+            if ! git cat-file -e "$HEAD_SHA:projects/$p/README.md" 2>/dev/null; then
+              echo "::error::projects/$p/ 는 새로 추가된 프로젝트인데 README.md가 없습니다. 프로젝트 사용법을 짧게라도 적어주세요."
+              errors=1
+            fi
+          done
+
+          if [ "$errors" -eq 1 ]; then
+            exit 1
+          fi
+          echo "저장소 규칙 검사 통과"
