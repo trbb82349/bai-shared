@@ -48,7 +48,7 @@ main merge                           ← 위 검사 3개를 통과해야 merge �
 
 ## 사용 방법 (전원 공통)
 
-자기 AI 코딩 에이전트(Claude Code·Codex·Cursor 등 무엇이든)에게 아래처럼 한 줄만 시키세요. 이 저장소의 [AGENTS.md](AGENTS.md)에 자세한 절차가 적혀 있어서, 그 파일을 읽을 줄 아는 에이전트라면 알아서 따라합니다.
+자기 AI 코딩 에이전트(Claude Code·Codex·Cursor 등 무엇이든)에게 아래처럼 한 줄만 시키세요. 모든 규칙과 절차는 [AGENTS.md](AGENTS.md) 하나에 있고, 도구마다 이 파일을 자동으로 찾아 읽도록 맞춰뒀습니다 — Codex는 `AGENTS.md`를 기본으로 자동 인식하고, Claude Code는 [CLAUDE.md](CLAUDE.md), Cursor는 `.cursorrules`를 통해 같은 내용을 자동으로 봅니다. 그래서 프롬프트에 "AGENTS.md 읽고"라고 굳이 안 적어도 됩니다 (적어도 무방합니다).
 
 <img src="https://img.shields.io/badge/%ED%8C%80%EC%9B%90%20%EC%9E%91%EC%97%85%20%EA%B3%B5%EC%9C%A0%20%EB%B0%9B%EA%B8%B0-yellow?style=for-the-badge" alt="팀원 작업 공유 받기" height="34">
 
