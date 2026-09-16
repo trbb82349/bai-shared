@@ -1,0 +1,50 @@
+name: PR 안전 검사
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  folder-ownership-check:
+    name: folder-ownership-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 본인 projects/ 폴더만 수정했는지 확인
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          errors=0
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              projects/*)
+                owner=$(echo "$path" | cut -d/ -f2)
+                if [ "$owner" != "$BRANCH" ]; then
+                  echo "::error file=$path::projects/$owner/ 는 브랜치($BRANCH) 소유가 아닌 팀원 폴더입니다. 본인 폴더(projects/$BRANCH/)만 이 PR에서 수정하세요."
+                  errors=1
+                fi
+                ;;
+            esac
+          done < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          if [ "$errors" -eq 1 ]; then
+            echo "다른 팀원의 프로젝트 폴더를 수정하는 변경이 포함되어 있습니다."
+            exit 1
+          fi
+          echo "프로젝트 폴더 소유권 검사 통과: 본인 폴더만 수정했습니다."
+
+  secret-scan:
+    name: secret-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks로 민감정보 스캔
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
