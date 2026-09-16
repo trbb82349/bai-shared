@@ -49,28 +49,28 @@ bai-shared/
 > 내 작업을 main에 PR로 올릴 때 (merge는 이후 직접 결정) (오른쪽 아래 복사 아이콘 클릭)
 >
 > ```text
-> bai-shared 저장소의 AGENTS.md를 읽고, 지금 이 프로젝트를 내 이름에 해당하는 GitHub 아이디 폴더 아래에 올리고 핸드오프 문서도 같이 써서 내 브랜치에 push하고 main으로 PR을 열어줘. 나는 (여기에 이름)이야.
+> bai-shared 저장소의 AGENTS.md를 읽고, 지금 이 프로젝트를 내 이름에 해당하는 GitHub 아이디 폴더 아래에 올리고 핸드오프 문서도 같이 써서 작업 브랜치에 push하고 main으로 PR을 열어줘. 나는 (여기에 이름)이야.
 > ```
 
-직접 명령어: `git add . && git commit -m "메시지" && git push -u origin <내GitHub아이디> && gh pr create --base main --head <내GitHub아이디>` (프로젝트 폴더 복사·핸드오프 문서 작성은 별도)
+직접 명령어: `git add . && git commit -m "메시지" && git push -u origin <내GitHub아이디>/<작업이름> && gh pr create --base main --head <내GitHub아이디>/<작업이름>` (프로젝트 폴더 복사·핸드오프 문서 작성은 별도)
 
-**왜 브랜치를 쓰나요?** `main`에 바로 push하지 않고 본인 GitHub 아이디 브랜치에서 작업한 뒤 PR을 열면, merge하기 전에 변경사항을 한눈에 확인할 수 있고 다른 사람 작업과 우연히 충돌할 일이 줄어듭니다. **PR을 언제 merge할지는 본인이 정하면 됩니다** — "내 작업 공유하기"는 PR을 여는 것까지만 하고, merge는 자동으로 실행되지 않습니다.
+**왜 브랜치를 쓰나요?** `main`에 바로 push하지 않고 브랜치에서 작업한 뒤 PR을 열면, merge하기 전에 변경사항을 한눈에 확인할 수 있고 다른 사람 작업과 우연히 충돌할 일이 줄어듭니다. **브랜치는 사람이 아니라 작업 단위입니다** — 이름 형식은 `<GitHub아이디>/<작업이름>` (예: `trbb82349/careerlens-update`, `chldbfk/project-a`). 같은 사람이 여러 작업을 동시에 진행해도 브랜치가 안 겹치고, PR이 merge되면 그 브랜치는 자동으로 삭제됩니다. **PR을 언제 merge할지는 본인이 정하면 됩니다** — "내 작업 공유하기"는 PR을 여는 것까지만 하고, merge는 자동으로 실행되지 않습니다.
 
 **`main`은 보호되어 있습니다.** 이제 `main`에 직접 push할 수 없고, 항상 PR을 통해야 합니다. PR을 열면 자동으로 두 가지를 검사합니다.
-- **폴더 소유권 검사**: 본인 브랜치(=GitHub 아이디)와 다른 사람의 `projects/<아이디>/` 폴더를 건드리면 실패합니다.
+- **폴더 소유권 검사**: PR 브랜치의 앞부분(`<GitHub아이디>/...`)과 다른 사람의 `projects/<아이디>/` 폴더를 건드리면 실패합니다.
 - **민감정보 스캔**: API 키, 비밀번호 같은 게 실수로 섞였는지 확인합니다.
 
 리뷰 승인은 필수가 아니라서, 위 두 검사만 통과하면 본인이 바로 merge할 수 있습니다.
 
 <img src="https://img.shields.io/badge/%EB%82%B4%20%EB%B8%8C%EB%9E%9C%EC%B9%98%20%EC%97%B0%EA%B2%B0%ED%95%98%EA%B8%B0-blue?style=for-the-badge" alt="내 브랜치 연결하기" height="34">
 
-> 파일을 올리기 전에, 작업을 시작하면서 미리 내 GitHub 아이디 브랜치로 연결해두고 싶을 때 (오른쪽 아래 복사 아이콘 클릭)
+> 파일을 올리기 전에, 작업을 시작하면서 미리 작업 브랜치로 연결해두고 싶을 때 (오른쪽 아래 복사 아이콘 클릭)
 >
 > ```text
-> bai-shared 저장소를 clone 받고, 내 이름에 해당하는 GitHub 아이디 브랜치로 전환(없으면 새로 만들어)해줘. 나는 (여기에 이름)이야.
+> bai-shared 저장소를 clone 받고, 이번 작업용 브랜치로 전환(없으면 새로 만들어)해줘. 나는 (여기에 이름)이고, 이번 작업은 (여기에 작업 내용)이야.
 > ```
 
-직접 명령어: `git fetch origin && git switch <내GitHub아이디>` (없으면 `git switch -c <내GitHub아이디> origin/main`)
+직접 명령어: `git fetch origin && git switch <내GitHub아이디>/<작업이름>` (없으면 `git switch -c <내GitHub아이디>/<작업이름> origin/main`)
 
 > 이 단계는 선택 사항입니다 — 안 해도 위 "내 작업 공유하기"를 실행하면 알아서 본인 브랜치로 전환됩니다.
 

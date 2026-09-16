@@ -57,15 +57,18 @@ clone이나 sparse-checkout을 실행하기 전에, 먼저 목적이 "확인용"
 
 ## "내 브랜치로 연결해줘" / "내 작업 브랜치 시작해줘"라고 하면
 
-프로젝트 파일을 옮기기 전에, 본인 GitHub 아이디 브랜치로 전환만 먼저 해두고 싶을 때 씁니다. ("내 프로젝트 공유해줘" 절차의 1a와 같은 내용이라 공유할 때 자동으로도 실행되지만, 작업을 시작하는 시점에 미리 연결해두고 싶으면 이 절차만 따로 실행해도 됩니다.)
+프로젝트 파일을 옮기기 전에, 이번 작업용 브랜치로 전환만 먼저 해두고 싶을 때 씁니다. ("내 프로젝트 공유해줘" 절차의 1a와 같은 내용이라 공유할 때 자동으로도 실행되지만, 작업을 시작하는 시점에 미리 연결해두고 싶으면 이 절차만 따로 실행해도 됩니다.)
+
+**브랜치는 사람 단위가 아니라 작업 단위입니다.** 이름 형식은 `<GitHub아이디>/<작업이름>` (예: `trbb82349/careerlens-update`, `chldbfk/project-a`). 같은 사람이 여러 작업을 동시에 진행해도 브랜치가 겹치지 않고, 작업이 끝나면(PR이 main에 merge되면) 그 브랜치는 자동으로 삭제됩니다.
 
 0. 본인 GitHub 아이디를 정합니다. 이름을 말했으면 [MEMBERS.md](MEMBERS.md)에서 찾고, 표에 없으면(처음 연결하는 사람) GitHub 아이디를 물어보고 — `git config user.name`이나 `gh api user`로 추측되면 맞는지 확인만 받습니다 — 확인되면 [MEMBERS.md](MEMBERS.md)에 "이름 | GitHub 아이디" 줄을 새로 추가합니다.
+0-1. 이번에 할 작업을 짧은 영어 kebab-case 이름으로 정합니다 (예: "careerlens 업데이트" → `careerlens-update`). 애매하면 사용자에게 한 줄로 물어봅니다. 브랜치 이름은 `<GitHub아이디>/<작업이름>`이 됩니다.
 1. 아직 clone하지 않았으면 "저장 위치 원칙"에 따라 clone합니다. 이 절차는 대부분 "이어서 계속 작업할 용도"이므로, 애매하면 확인용인지 계속 쓸 폴더인지 먼저 물어봅니다.
 2. `git fetch origin`
-3. 원격에 `<GitHub아이디>` 브랜치가 이미 있으면: `git switch <GitHub아이디>` (로컬에 없으면 `git switch -c <GitHub아이디> origin/<GitHub아이디>`), 이어서 `git pull`로 최신화합니다.
-4. 원격에 없으면(처음 연결하는 사람): `git switch -c <GitHub아이디> origin/main`으로 새로 만들고, `git push -u origin <GitHub아이디>`로 원격에도 만들어둡니다.
+3. 원격에 같은 `<GitHub아이디>/<작업이름>` 브랜치가 이미 있으면(이어서 하는 작업): `git switch <GitHub아이디>/<작업이름>` (로컬에 없으면 `git switch -c <GitHub아이디>/<작업이름> origin/<GitHub아이디>/<작업이름>`), 이어서 `git pull`로 최신화합니다.
+4. 없으면(새 작업): `git switch -c <GitHub아이디>/<작업이름> origin/main`으로 새로 만들고, `git push -u origin <GitHub아이디>/<작업이름>`로 원격에도 만들어둡니다.
 5. `main`이 이 브랜치보다 앞서 있으면(다른 사람 PR이 먼저 merge된 경우) `git merge origin/main`으로 최신 내용을 받습니다. 충돌이 나면 임의로 풀지 말고 사용자에게 보여주고 같이 해결합니다.
-6. 완료되면 "이제 `<GitHub아이디>` 브랜치에 연결됐습니다"라고 짧게 알려줍니다. 이 단계에서는 프로젝트 파일을 옮기거나 PR을 열지 않습니다 — 그건 아래 "내 프로젝트 공유해줘"에서 진행합니다.
+6. 완료되면 "이제 `<GitHub아이디>/<작업이름>` 브랜치에 연결됐습니다"라고 짧게 알려줍니다. 이 단계에서는 프로젝트 파일을 옮기거나 PR을 열지 않습니다 — 그건 아래 "내 프로젝트 공유해줘"에서 진행합니다.
 
 ## "내 프로젝트 공유해줘" / "핸드오프 문서 써줘"라고 하면
 
@@ -89,12 +92,13 @@ clone이나 sparse-checkout을 실행하기 전에, 먼저 목적이 "확인용"
    - 원본 대화 전체를 붙여넣지 않습니다. 반드시 항목별로 걸러서 요약합니다.
    - "결과물 위치"에는 로컬 경로가 아니라 이 저장소 안의 경로(`projects/사용자GitHub아이디/프로젝트이름/...`)를 적습니다.
    - `handoffs/`에 같은 프로젝트의 이전 문서가 있으면 찾아서, 그 문서의 "다음 할 일"이 이번에 얼마나 처리됐는지 짚어줍니다.
-5. `git add`, `git commit`으로 본인 브랜치에 커밋합니다. 1단계에서 [MEMBERS.md](MEMBERS.md)에 새 줄을 추가했다면 그 파일도 같이 커밋에 포함합니다. 올리기 전에 어떤 파일이 커밋되는지 사용자에게 보여주고 확인받습니다 (특히 `.env`, API 키, 큰 바이너리 파일이 섞여 있지 않은지 — 이 저장소는 public입니다).
-6. `git push -u origin <GitHub아이디>`로 본인 브랜치를 원격에 올립니다 (이미 추적 중이면 `git push`).
+5. `git add`, `git commit`으로 작업 브랜치(`<GitHub아이디>/<작업이름>`)에 커밋합니다. 1단계에서 [MEMBERS.md](MEMBERS.md)에 새 줄을 추가했다면 그 파일도 같이 커밋에 포함합니다. 올리기 전에 어떤 파일이 커밋되는지 사용자에게 보여주고 확인받습니다 (특히 `.env`, API 키, 큰 바이너리 파일이 섞여 있지 않은지 — 이 저장소는 public입니다).
+6. `git push -u origin <GitHub아이디>/<작업이름>`로 작업 브랜치를 원격에 올립니다 (이미 추적 중이면 `git push`).
 7. `main`으로의 PR을 엽니다.
-   - `gh` CLI가 설치되어 있고 로그인되어 있으면(`gh auth status`): `gh pr create --base main --head <GitHub아이디> --title "<이름>: <프로젝트/변경 요약>" --body "<핸드오프 문서 핵심 요약 1~3줄>"`을 실행하고, 만들어진 PR 링크를 사용자에게 알려줍니다. 이미 이 브랜치로 연 PR이 있으면(같은 head/base) 새로 만들지 않고 기존 PR에 커밋이 추가됐다고만 알려줍니다.
-   - `gh`가 없거나 로그인 안 되어 있으면, 직접 열 수 있는 링크를 알려줍니다: `https://github.com/trbb82349/bai-shared/compare/main...<GitHub아이디>?expand=1`
+   - `gh` CLI가 설치되어 있고 로그인되어 있으면(`gh auth status`): `gh pr create --base main --head <GitHub아이디>/<작업이름> --title "<이름>: <프로젝트/변경 요약>" --body "<핸드오프 문서 핵심 요약 1~3줄>"`을 실행하고, 만들어진 PR 링크를 사용자에게 알려줍니다. 이미 이 브랜치로 연 PR이 있으면(같은 head/base) 새로 만들지 않고 기존 PR에 커밋이 추가됐다고만 알려줍니다.
+   - `gh`가 없거나 로그인 안 되어 있으면, 직접 열 수 있는 링크를 알려줍니다: `https://github.com/trbb82349/bai-shared/compare/main...<GitHub아이디>/<작업이름>?expand=1`
    - PR을 언제 merge할지(본인이 직접 merge할지, 다른 사람 리뷰를 기다릴지)는 사용자 판단이므로 임의로 merge하지 않습니다.
+   - PR이 merge되면 저장소 설정(Automatically delete head branches)에 따라 그 작업 브랜치는 자동으로 삭제됩니다. 로컬 브랜치는 `git switch main && git branch -d <GitHub아이디>/<작업이름>`로 정리해주면 됩니다.
 
 ## 실행 관련 주의사항
 
